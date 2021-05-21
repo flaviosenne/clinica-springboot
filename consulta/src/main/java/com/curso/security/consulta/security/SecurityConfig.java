@@ -12,6 +12,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/webjars/**","/css/**","/image/**","/js/**").permitAll()
                 .antMatchers("/", "/home").permitAll()
-                .anyRequest().authenticated();
+
+                .anyRequest().authenticated()
+        .and()
+            .formLogin()
+            .loginPage("/login") // qual o recurso que vai ser controlado
+            .defaultSuccessUrl("/", true) //caso de certo quala apgina que será redirecionada
+            .failureUrl("/login-error") // caso dê errado, será direcionado para esse recurso
+            .permitAll()
+        .and()
+            .logout()
+            .logoutSuccessUrl("/");
     }
 }

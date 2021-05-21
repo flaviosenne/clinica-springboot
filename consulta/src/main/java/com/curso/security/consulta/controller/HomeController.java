@@ -1,8 +1,8 @@
 package com.curso.security.consulta.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class HomeController {
@@ -11,5 +11,23 @@ public class HomeController {
 	@GetMapping({"/", "/home"})
 	public String home() {
 		return "home";
-	}	
+	}
+
+	// abrir pagina login
+	@GetMapping({"/login"})
+	public String login() {
+		return "login";
+	}
+
+
+	// login inválido
+	@GetMapping({"/login-error"})
+	public String loginError(ModelMap model) {
+		model.addAttribute("alerta", "erro");
+		model.addAttribute("titulo", "Credenciais inválidas!");
+		model.addAttribute("texto", "Login ou senha incorreto, tente novamente.");
+		model.addAttribute("subtexto", "Acesso permitido apenas para cadastrados já ativados.");
+		return "login";
+	}
+
 }
