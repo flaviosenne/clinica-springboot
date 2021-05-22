@@ -32,4 +32,14 @@ public class EspecialidadesService {
         : especialidadesRepository.findAllByTitulo(datatables.getSearch(), datatables.getPageable());
                 return datatables.getResponse(page);
     }
+
+    @Transactional
+    public Especialidade buscaporId(Long id) {
+        return especialidadesRepository.findById(id).get();
+    }
+
+    @Transactional
+    public void remover(Long id) {
+        especialidadesRepository.deleteById(id);
+    }
 }
