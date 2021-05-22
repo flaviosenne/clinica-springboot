@@ -91,6 +91,22 @@
 
 	</section>
 	<script	th:src="~{}" th:fragment="js"></script>
-	<script th:inline="javascript" th:fragment="inlinescript"></script>
+	<script th:inline="javascript" th:fragment="inlinescript">
+		$('#table-usuarios tbody').on('click', '[id*="dp_"]', function () {
+    	var data = table.row($(this).parents('tr')).data();
+    	var aux = new Array();
+		$.each(data.perfis, function( index, value ) {
+			  aux.push(value.id);
+		});
+		document.location.href = '/u/editar/dados/usuario/' + data.id + '/perfis/' + aux;
+    } );
+
+    $('#perfis').ready(function(){
+    	var perfis = [[${usuario.perfis}]];
+    	$.each(perfis,function(k,v){
+    		$('#perfis option[value="' + v.id + '"]').attr('selected','selected');
+    	})
+    })
+	</script>
 </body>
 </html>

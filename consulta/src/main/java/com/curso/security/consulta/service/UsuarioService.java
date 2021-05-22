@@ -70,4 +70,9 @@ public class UsuarioService implements UserDetailsService {
         usuario.setSenha(crypt);
         usuariorRepositorio.save(usuario);
     }
+
+    @Transactional
+    public Usuario buscarPorId(Long id) {
+        return usuariorRepositorio.findById(id).get();
+    }
 }
