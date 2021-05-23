@@ -75,4 +75,10 @@ public class UsuarioService implements UserDetailsService {
     public Usuario buscarPorId(Long id) {
         return usuariorRepositorio.findById(id).get();
     }
+
+    @Transactional
+    public Usuario buscarPorIdEPerfis(Long usuarioId, Long[] perfisId) {
+        return usuariorRepositorio.findByIdAndPerfis(usuarioId, perfisId)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário nãp existente"));
+    }
 }

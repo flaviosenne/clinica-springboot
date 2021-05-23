@@ -1,5 +1,6 @@
 package com.curso.security.consulta.security;
 
+import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +15,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UsuarioService usuarioService;
 
+    private static final String ADMIN = PerfilTipo.ADMIN.getDesc();
+    private static final String MEDICO = PerfilTipo.MEDICO.getDesc();
+    private static final String PACIENTE = PerfilTipo.PACIENTE.getDesc();
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -22,10 +27,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/home").permitAll()
 
                 // accessos privado admin
-                .antMatchers("/u/**").hasAuthority("ADMIN") // essa autoridade tem que ser conforme está no banco
+                .antMatchers("/u/**").hasAuthority(ADMIN) // essa autoridade tem que ser conforme está no banco
 
                 // accessos privado medicos
-                .antMatchers("/medicos/**").hasAuthority("MEDICO")
+                .antMatchers("/medicos/**").hasAuthority(MEDICO)
+
+                // accessos privado paciente
+                .antMatchers("/pacientes/**").hasAuthority(PACIENTE)
+
+                .antMatchers("/especialidades/**").hasAuthority(MEDICO)
                 .anyRequest().authenticated()
         .and()
             .formLogin()

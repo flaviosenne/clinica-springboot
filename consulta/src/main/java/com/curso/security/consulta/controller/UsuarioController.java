@@ -1,6 +1,7 @@
 package com.curso.security.consulta.controller;
 
 import com.curso.security.consulta.domain.Perfil;
+import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.domain.Usuario;
 import com.curso.security.consulta.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +68,31 @@ public class UsuarioController {
     public ModelAndView preEditarCredenciais(@PathVariable("id") Long id){
 
         return new ModelAndView("usuario/cadastro", "usuario", usuarioService.buscarPorId(id));
+    }
+
+    @GetMapping("/editar/dados/usuario/{id}/perfis/{perfis}")
+    public ModelAndView preEditarCredenciais(@PathVariable("id") Long usuarioId,
+                                             @PathVariable("perfis") Long[] perfisId){
+
+        Usuario usuario = usuarioService.buscarPorIdEPerfis(usuarioId, perfisId);
+
+        if(usuario.getPerfis().contains(new Perfil(PerfilTipo.ADMIN.getCod())) &&
+                !usuario.getPerfis().contains(new Perfil(PerfilTipo.MEDICO.getCod()))) {
+
+            return new ModelAndView("usuario/cadastro", "usuario",usuario);
+
+        }else if(usuario.getPerfis().contains(new Perfil(PerfilTipo.MEDICO.getCod()))){
+
+            return new ModelAndView("especialidade/especialidade");
+
+        }else if(usuario.getPerfis().contains(new Perfil(PerfilTipo.PACIENTE.getCod()))){
+            ModelAndView model = new ModelAndView("error");
+            model.addObject("status", 403);
+            model.addObject("error", "Area restrita");
+            model.addObject("message", "Os dados de paciente são restrito a ele");
+            return model;
+        }
+
+        return new ModelAndView("redirect:/u/lista");
     }
 }
