@@ -36,6 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // accessos privado paciente
                 .antMatchers("/pacientes/**").hasAuthority(PACIENTE)
 
+
+                // accessos privado especialidade
+                .antMatchers("/especialidades/datatables/server/medico/*").hasAnyAuthority(MEDICO, ADMIN)
+                .antMatchers("/especialidades/titulo").hasAnyAuthority(MEDICO, ADMIN)
                 .antMatchers("/especialidades/**").hasAuthority(MEDICO)
                 .anyRequest().authenticated()
         .and()
