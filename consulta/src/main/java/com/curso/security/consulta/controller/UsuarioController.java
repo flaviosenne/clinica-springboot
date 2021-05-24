@@ -1,8 +1,10 @@
 package com.curso.security.consulta.controller;
 
+import com.curso.security.consulta.domain.Medico;
 import com.curso.security.consulta.domain.Perfil;
 import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.domain.Usuario;
+import com.curso.security.consulta.service.MedicoService;
 import com.curso.security.consulta.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,6 +26,9 @@ import java.util.List;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private MedicoService medicoService;
 
     @GetMapping("/novo/cadastro/usuario")
     public String cadastroPorAdminParaAdminMedicoPaciente(Usuario usuario){
@@ -83,7 +88,11 @@ public class UsuarioController {
 
         }else if(usuario.getPerfis().contains(new Perfil(PerfilTipo.MEDICO.getCod()))){
 
-            return new ModelAndView("especialidade/especialidade");
+            Medico medico = medicoService.buscarPorUsuarioId(usuarioId);
+            return medico.hasNotId()?
+                    new ModelAndView("medico/cadastro", "medico",
+                            new Medico(new Usuario(usuarioId)))
+                    : new ModelAndView("medico/cadastro", "medico", medico);
 
         }else if(usuario.getPerfis().contains(new Perfil(PerfilTipo.PACIENTE.getCod()))){
             ModelAndView model = new ModelAndView("error");
