@@ -81,4 +81,14 @@ public class UsuarioService implements UserDetailsService {
         return usuariorRepositorio.findByIdAndPerfis(usuarioId, perfisId)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário nãp existente"));
     }
+
+    public static boolean isSenhaCorreta(String senhaDigitada, String senhaDB) {
+        return  new BCryptPasswordEncoder().matches(senhaDigitada, senhaDB);
+    }
+
+    @Transactional
+    public void alterarSenha(Usuario usuario, String novaSenha) {
+        usuario.setSenha(new BCryptPasswordEncoder().encode(novaSenha));
+        usuariorRepositorio.save(usuario);
+    }
 }
