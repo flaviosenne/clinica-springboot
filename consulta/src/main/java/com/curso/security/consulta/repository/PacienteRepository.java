@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
-    @Query("select p from Paciente p where p.usuario.email like :email")
+    @Query("select p from Paciente p inner join p.usuario u where u.email like :email%")
     Optional<Paciente> findByUsuarioEmail(String email);
 }
