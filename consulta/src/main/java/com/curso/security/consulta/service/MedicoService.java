@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class MedicoService {
@@ -45,5 +46,10 @@ public class MedicoService {
         Medico medico = medicoRepository.findById(idMed).get();
 
         medico.getEspecialidades().removeIf(e -> e.getId().equals(idEsp));
+    }
+
+    @Transactional
+    public List<Medico> buscarMedicosPorEspecialidades(String titulo) {
+        return medicoRepository.findByMedicosPorEspecialidade(titulo);
     }
 }

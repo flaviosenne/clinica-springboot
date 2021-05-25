@@ -31,6 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/u/**").hasAuthority(ADMIN) // essa autoridade tem que ser conforme está no banco
 
                 // accessos privado medicos
+                .antMatchers("/medicos/especialidade/titulo/*").hasAuthority(PACIENTE)
                 .antMatchers("/medicos/dados", "/medicos/salvar","/medicos/editar").hasAnyAuthority(MEDICO, ADMIN)
                 .antMatchers("/medicos/**").hasAuthority(MEDICO)
 
@@ -40,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // accessos privado especialidade
                 .antMatchers("/especialidades/datatables/server/medico/*").hasAnyAuthority(MEDICO, ADMIN)
-                .antMatchers("/especialidades/titulo").hasAnyAuthority(MEDICO, ADMIN)
+                .antMatchers("/especialidades/titulo").hasAnyAuthority(MEDICO, ADMIN, PACIENTE)
                 .antMatchers("/especialidades/**").hasAuthority(MEDICO)
                 .anyRequest().authenticated()
         .and()

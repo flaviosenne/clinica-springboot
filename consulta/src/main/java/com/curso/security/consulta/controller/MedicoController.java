@@ -5,6 +5,7 @@ import com.curso.security.consulta.domain.Usuario;
 import com.curso.security.consulta.service.MedicoService;
 import com.curso.security.consulta.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
@@ -69,5 +70,10 @@ public class MedicoController {
 
         redirect.addFlashAttribute("sucesso", "Especialidade Removida com sucesso");
         return "redirect:/medicos/dados";
+    }
+
+    @GetMapping("/especialidade/titulo/{titulo}")
+    public ResponseEntity<?> getMedicosPorEspecialidades(@PathVariable("titulo")String titulo){
+        return  ResponseEntity.ok(medicoService.buscarMedicosPorEspecialidades(titulo));
     }
 }
