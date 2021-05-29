@@ -49,4 +49,12 @@ public class AgendamentoService {
     public Agendamento buscarPorId(Long id) {
          return agendamentoRepository.findById(id).get();
     }
+    @Transactional
+    public void editar(Agendamento agendamento, String username) {
+        Agendamento age = buscarPorId(agendamento.getId());
+        age.setDataConsulta(agendamento.getDataConsulta());
+        age.setEspecialidade(agendamento.getEspecialidade());
+        age.setHorario(agendamento.getHorario());
+        age.setMedico(agendamento.getMedico());
+    }
 }

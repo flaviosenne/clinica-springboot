@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 @Controller
@@ -94,5 +95,20 @@ public class AgendamentoController {
         Agendamento agendamento =agendamentoService.buscarPorId(id);
         model.addAttribute("agendamento", agendamento);
         return "agendamento/cadastro";
+    }
+
+    @Transactional
+    @PostMapping("/editar")
+    public String editarConsulta(Agendamento agendamento, RedirectAttributes redirect, @AuthenticationPrincipal User user){
+        String titulo = agendamento.getEspecialidade().getTitulo();
+        Especialidade especialidade = especialidadeService
+                .buscarPortTitulo(new String[] {titulo})
+                .stream().findFirst().get();
+
+        agendamento.setEspecialidade(especialidade);
+        agendamentoService.editar(agendamento, user.getUsername());
+        redirect.addFlashAttribute("sucesso", "Sua consulta foi alterada com sucesso");
+        return "redirect:/agendamentos/agendar";
+
     }
 }
