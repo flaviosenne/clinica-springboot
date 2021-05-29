@@ -1,5 +1,6 @@
 package com.curso.security.consulta.service;
 
+import com.curso.security.consulta.domain.Agendamento;
 import com.curso.security.consulta.domain.Horario;
 import com.curso.security.consulta.repository.AgendamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,5 +18,9 @@ public class AgendamentoService {
     @Transactional
     public List<Horario> buscarHorariosNaoAgendadosPorMedicoIdEData(Long id, LocalDate data) {
         return agendamentoRepository.findByMedicoIdAndDataNotHorarioAgendado(id, data);
+    }
+    @Transactional
+    public void salvar(Agendamento agendamento){
+        agendamentoRepository.save(agendamento);
     }
 }
