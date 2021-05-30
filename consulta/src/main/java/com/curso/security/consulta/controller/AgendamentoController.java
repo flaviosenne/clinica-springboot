@@ -92,7 +92,7 @@ public class AgendamentoController {
                                             ModelMap model,
                                             @AuthenticationPrincipal User user){
 
-        Agendamento agendamento =agendamentoService.buscarPorId(id);
+        Agendamento agendamento =agendamentoService.buscarPorIdEUsuario(id, user.getUsername());
         model.addAttribute("agendamento", agendamento);
         return "agendamento/cadastro";
     }

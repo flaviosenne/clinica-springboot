@@ -6,6 +6,7 @@ import com.curso.security.consulta.datatables.Datatables;
 import com.curso.security.consulta.datatables.DatatablesColunas;
 import com.curso.security.consulta.repository.AgendamentoRepository;
 import com.curso.security.consulta.repository.projection.HistoricoPaciente;
+import com.curso.security.consulta.security.exception.AccessDenidedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -50,11 +51,17 @@ public class AgendamentoService {
          return agendamentoRepository.findById(id).get();
     }
     @Transactional
-    public void editar(Agendamento agendamento, String username) {
-        Agendamento age = buscarPorId(agendamento.getId());
+    public void editar(Agendamento agendamento, String email) {
+        Agendamento age = buscarPorIdEUsuario(agendamento.getId(), email);
         age.setDataConsulta(agendamento.getDataConsulta());
         age.setEspecialidade(agendamento.getEspecialidade());
         age.setHorario(agendamento.getHorario());
         age.setMedico(agendamento.getMedico());
+    }
+
+    @Transactional
+    public Agendamento buscarPorIdEUsuario(Long id, String email) {
+        return agendamentoRepository.findByIdAndPacientOrMedicoEmail(id, email)
+                .orElseThrow(() -> new AccessDenidedException("Acesso negado ao usuario: "+ email));
     }
 }
