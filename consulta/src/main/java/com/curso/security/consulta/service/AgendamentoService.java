@@ -64,4 +64,8 @@ public class AgendamentoService {
         return agendamentoRepository.findByIdAndPacientOrMedicoEmail(id, email)
                 .orElseThrow(() -> new AccessDenidedException("Acesso negado ao usuario: "+ email));
     }
+
+    public void remover(Long id) {
+        agendamentoRepository.deleteById(id);
+    }
 }
