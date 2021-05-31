@@ -3,6 +3,7 @@ package com.curso.security.consulta.service;
 import com.curso.security.consulta.datatables.Datatables;
 import com.curso.security.consulta.datatables.DatatablesColunas;
 import com.curso.security.consulta.domain.Perfil;
+import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.domain.Usuario;
 import com.curso.security.consulta.repository.UsuariorRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,13 @@ public class UsuarioService implements UserDetailsService {
     @Transactional
     public void alterarSenha(Usuario usuario, String novaSenha) {
         usuario.setSenha(new BCryptPasswordEncoder().encode(novaSenha));
+        usuariorRepositorio.save(usuario);
+    }
+
+    public void salvarCadastroPaciente(Usuario usuario) {
+        String crypt = new BCryptPasswordEncoder().encode(usuario.getSenha());
+        usuario.setSenha(crypt);
+        usuario.addPerfil(PerfilTipo.PACIENTE);
         usuariorRepositorio.save(usuario);
     }
 }
