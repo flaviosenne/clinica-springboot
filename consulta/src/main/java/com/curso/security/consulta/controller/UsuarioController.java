@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
@@ -144,7 +145,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastro/paciente/salvar")
-    public String salvarCadastroPaciente(Usuario usuario, BindingResult bindingResult){
+    public String salvarCadastroPaciente(Usuario usuario, BindingResult bindingResult)  throws MessagingException {
         try{
             usuarioService.salvarCadastroPaciente(usuario);
             return "redirect:/u/cadastro/realizado";
@@ -152,5 +153,16 @@ public class UsuarioController {
             bindingResult.reject("email", "Ops.. Este email já existe na base de dados");
             return "cadastrar-se";
         }
+    }
+
+    @GetMapping("/confirmacao/cadastro")
+    public String respostaConfirmacaoCadastroPaciente(@RequestParam("codigo") String codigo,
+                                                      RedirectAttributes redirect){
+        usuarioService.ativarCadastroPaciente(codigo);
+        redirect.addFlashAttribute("alerta", "sucesso");
+        redirect.addFlashAttribute("titulo", "Cadastro Ativado");
+        redirect.addFlashAttribute("texto", "Parabéns, seu cadastro está ativo");
+        redirect.addFlashAttribute("subtexto", "Siga com seu login/senha");
+        return "redirect:/login";
     }
 }

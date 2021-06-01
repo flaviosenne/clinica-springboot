@@ -6,6 +6,8 @@ import com.curso.security.consulta.domain.Perfil;
 import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.domain.Usuario;
 import com.curso.security.consulta.repository.UsuariorRepositorio;
+import com.curso.security.consulta.security.exception.AccessDenidedException;
+import org.apache.logging.log4j.util.Base64Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -15,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -30,6 +34,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private Datatables datatables;
+
+    @Autowired
+    private EmailService emailService;
 
     @Transactional
     public Usuario buscarPorEmail(String email){
@@ -95,14 +102,34 @@ public class UsuarioService implements UserDetailsService {
         usuariorRepositorio.save(usuario);
     }
 
-    public void salvarCadastroPaciente(Usuario usuario) {
+    public void salvarCadastroPaciente(Usuario usuario)  throws MessagingException{
         String crypt = new BCryptPasswordEncoder().encode(usuario.getSenha());
         usuario.setSenha(crypt);
         usuario.addPerfil(PerfilTipo.PACIENTE);
         usuariorRepositorio.save(usuario);
+
+        emailDeConfirmacaoDeCadastro(usuario.getEmail());
     }
 
     public Optional<Usuario> buscarPorEmailEAtivo(String email){
         return usuariorRepositorio.findByEmailAndAtivo();
+    }
+
+    public void emailDeConfirmacaoDeCadastro(String email) throws MessagingException {
+        String codigo = Base64Utils.encodeToString(email.getBytes());
+
+        emailService.enviarPedidoDeconfirmacaoDeCadastro(email, codigo);
+    }
+
+    @Transactional
+    public void ativarCadastroPaciente(String codigo){
+        String email = new String(Base64Utils.decodeFromString(codigo));
+        Usuario usuario = buscarPorEmail(email);
+
+        if(usuario.hasNotId()){
+            throw new AccessDenidedException("Não foi possivel ativar se cadastro");
+        }
+
+        usuario.setAtivo(true);
     }
 }
