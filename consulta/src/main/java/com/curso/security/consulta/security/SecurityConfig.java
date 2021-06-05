@@ -3,12 +3,17 @@ package com.curso.security.consulta.security;
 import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
@@ -66,10 +71,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedPage("/acesso-negado")
         .and()
             .rememberMe();
+
+        http.sessionManagement()
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(true) // quando estiver logado em um dispositivo, não logará no outro
+                .sessionRegistry(sessionRegister());
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(usuarioService).passwordEncoder(new BCryptPasswordEncoder());
+    }
+
+    @Bean
+    public SessionRegistry sessionRegister(){
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<?> servletListenerRegistrationBean(){
+        return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
     }
 }
