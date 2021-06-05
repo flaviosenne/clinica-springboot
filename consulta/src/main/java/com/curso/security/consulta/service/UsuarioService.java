@@ -7,6 +7,7 @@ import com.curso.security.consulta.domain.PerfilTipo;
 import com.curso.security.consulta.domain.Usuario;
 import com.curso.security.consulta.repository.UsuariorRepositorio;
 import com.curso.security.consulta.security.exception.AccessDenidedException;
+import net.bytebuddy.utility.RandomString;
 import org.apache.logging.log4j.util.Base64Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -112,7 +113,7 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public Optional<Usuario> buscarPorEmailEAtivo(String email){
-        return usuariorRepositorio.findByEmailAndAtivo();
+        return usuariorRepositorio.findByEmailAndAtivo(email);
     }
 
     public void emailDeConfirmacaoDeCadastro(String email) throws MessagingException {
@@ -131,5 +132,16 @@ public class UsuarioService implements UserDetailsService {
         }
 
         usuario.setAtivo(true);
+    }
+
+    @Transactional
+    public void pedidoRedefinicaoDeSenha(String email) throws MessagingException {
+        Usuario usuario = usuariorRepositorio.findByEmailAndAtivo
+                (email).orElseThrow(() ->
+                new UsernameNotFoundException("Usuário "+ email+ " não encontrado"));
+
+        String verificador = RandomString.make(6);
+        usuario.setCodigoVerificador(verificador);
+        emailService.enviarPedidoRedefinicaoSenha(email, verificador);
     }
 }
