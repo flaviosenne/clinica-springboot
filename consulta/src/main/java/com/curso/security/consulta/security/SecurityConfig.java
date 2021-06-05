@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -31,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/webjars/**","/css/**","/image/**","/js/**").permitAll()
-                .antMatchers("/", "/home").permitAll()
+            .antMatchers("/", "/home", "/expired").permitAll()
                 .antMatchers(
                         "/u/novo/cadastro",
                         "/u/cadastro/realizado",
@@ -74,8 +76,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.sessionManagement()
                 .maximumSessions(1)
-                .maxSessionsPreventsLogin(true) // quando estiver logado em um dispositivo, não logará no outro
+                .expiredUrl("/expired")
+//                .maxSessionsPreventsLogin(true) // quando estiver logado em um dispositivo, não logará no outro
+                .maxSessionsPreventsLogin(false) // quando estiver logado em um dispositivo, caso ocorra outro o login, a sessão anterioir será expirada
                 .sessionRegistry(sessionRegister());
+
+        http.sessionManagement()
+                .sessionFixation().newSession()
+                .sessionAuthenticationStrategy(sessionAuthenticationStrategy());
+    }
+
+    @Bean
+    public SessionAuthenticationStrategy sessionAuthenticationStrategy(){
+        return new RegisterSessionAuthenticationStrategy(sessionRegister());
     }
 
     @Override
